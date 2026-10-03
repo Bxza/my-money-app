@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#07162b">
+<meta name="description" content="Money Manager Smart Money แอปบันทึกรายรับรายจ่ายส่วนตัว">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon.svg">
+<link rel="apple-touch-icon" href="icons/icon.svg">
+<title>Money Manager • Smart Money</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+</head>
+<body>
+<div id="appShell">
+  <aside class="sidebar">
+    <div class="sideBrand"><div class="logo">฿</div><div><b>Money Manager</b><span>Smart Money</span></div></div>
+    <div class="sideLock">🔒 ใช้ส่วนตัว</div>
+    <nav class="sideNav">
+      <button class="navItem active" data-page="home"><span>⌂</span>หน้าหลัก</button>
+      <button class="navItem" data-page="add"><span>＋</span>เพิ่มรายการ</button>
+      <button class="navItem" data-page="history"><span>☷</span>ประวัติรายการ</button>
+      <button class="navItem" data-page="reports"><span>▥</span>รายงาน</button>
+      <button class="navItem" data-page="settings"><span>⚙</span>ตั้งค่า</button>
+    </nav>
+    <div class="sideFoot">ข้อมูลเก็บในเครื่องนี้<br><small>ไม่มีระบบสมาชิก</small></div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="mobileBrand"><div class="logo small">฿</div><div><b>Money Manager</b><span>Smart Money</span></div></div>
+      <div class="topTitle"><small id="pageKicker">ภาพรวมการเงิน</small><h2 id="pageTitle">หน้าหลัก</h2></div>
+      <div class="topActions"><button id="installBtn" class="ghostBtn hidden">ติดตั้งแอป</button><button id="themeBtn" class="iconBtn" title="โหมดมืด/สว่าง">☾</button><button id="backupTop" class="iconBtn" title="สำรองข้อมูล">⇩</button></div>
+    </header>
+
+    <section id="home" class="page active">
+      <div class="welcome"><div><small>จัดการเงิน...ให้เป็นเรื่องง่าย</small><h1>สวัสดีครับ 👋</h1><p>สรุปการเงินของคุณในที่เดียว</p></div><div class="welcomeArt">💸</div></div>
+      <div class="balanceCard">
+        <div class="balanceHead"><span>ยอดคงเหลือทั้งหมด</span><span class="private">🔒 ส่วนตัว</span></div>
+        <h1 id="balance">฿0.00</h1>
+        <div class="balanceGrid"><div class="incomeBox"><span>↗ รายรับเดือนนี้</span><b id="income">฿0.00</b></div><div class="expenseBox"><span>↘ รายจ่ายเดือนนี้</span><b id="expense">฿0.00</b></div></div>
+      </div>
+      <div class="quickGrid">
+        <button class="quickCard green" data-page="add" data-type="income"><i>＋</i><b>เพิ่มรายรับ</b><small>บันทึกเงินเข้า</small></button>
+        <button class="quickCard red" data-page="add" data-type="expense"><i>−</i><b>เพิ่มรายจ่าย</b><small>บันทึกเงินออก</small></button>
+        <button class="quickCard blue" id="quickScan"><i>▣</i><b>สแกนสลิป</b><small>อ่านแล้วบันทึกให้อัตโนมัติ</small></button>
+        <button class="quickCard purple" data-page="reports"><i>▥</i><b>ดูรายงาน</b><small>สรุปและกราฟ</small></button>
+      </div>
+      <div class="sectionTitle"><div><small id="monthLabel">เดือนนี้</small><h3>สรุปเดือนนี้</h3></div><button class="linkBtn" data-page="reports">ดูทั้งหมด ›</button></div>
+      <div class="summaryRow"><div class="summaryStat"><span>รายรับ</span><b id="sumIncome">฿0.00</b></div><div class="summaryStat"><span>รายจ่าย</span><b id="sumExpense">฿0.00</b></div><div class="summaryStat"><span>สุทธิ</span><b id="sumNet">฿0.00</b></div></div>
+      <div class="categoryCard"><div class="cardTitle"><b>ค่าใช้จ่ายตามหมวด</b><span id="catTotal">฿0.00</span></div><div class="catLayout"><div class="donut" id="donut"><div><b id="donutValue">฿0</b><span>รายจ่าย</span></div></div><div id="catLegend" class="legend"></div></div></div>
+      <div class="sectionTitle"><div><small>อัปเดตล่าสุด</small><h3>รายการล่าสุด</h3></div><button class="linkBtn" data-page="history">ดูทั้งหมด ›</button></div>
+      <div id="recentList" class="transactionList"></div>
+    </section>
+
+    <section id="add" class="page">
+      <div class="pageIntro"><button class="backBtn" data-page="home">‹</button><div><small>บันทึกข้อมูล</small><h2>เพิ่มรายการ</h2></div></div>
+      <div class="typeSwitch"><button id="incomeTab">🟢 รายรับ</button><button id="expenseTab" class="active">🔴 รายจ่าย</button></div>
+      <div class="scanHero" id="scanDrop"><div class="scanIcon">▣</div><div><b>สแกนสลิป</b><span>ถ่ายรูปหรือเลือกรูปสลิป แล้วระบบจะอ่านและ <strong>บันทึกรายการให้อัตโนมัติ</strong></span></div><input id="slipInput" type="file" accept="image/*" capture="environment"></div>
+      <div id="scanStatus" class="scanStatus hidden"></div>
+      <div id="manualArea" class="manualArea">
+        <div class="formCard"><div class="formTitle"><b>บันทึกรายการเอง</b><small>กรณีไม่ใช้สลิป</small></div>
+          <label>จำนวนเงิน<input id="amount" inputmode="decimal" placeholder="0.00"></label>
+          <div class="two"><label>วันที่<input id="date" type="date"></label><label>เวลา<input id="time" type="time"></label></div>
+          <label>หมวดหมู่<select id="category"></select></label>
+          <label>ธนาคาร / ช่องทาง<input id="bank" placeholder="เช่น K PLUS, SCB, เงินสด"></label>
+          <label>ผู้โอน / ผู้รับ<input id="person" placeholder="ชื่อหรือร้านค้า"></label>
+          <label>หมายเหตุ<textarea id="note" placeholder="รายละเอียดเพิ่มเติม"></textarea></label>
+          <button id="manualSave" class="primaryBtn">บันทึกรายการ</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="history" class="page">
+      <div class="pageIntro"><div><small>รายการทั้งหมด</small><h2>ประวัติรายการ</h2></div><button id="clearSearch" class="iconBtn">⌫</button></div>
+      <div class="searchBox">⌕<input id="search" placeholder="ค้นหารายการ เช่น อาหาร, SCB, 120"></div>
+      <div class="filterRow"><button class="filter active" data-filter="all">ทั้งหมด</button><button class="filter" data-filter="income">รายรับ</button><button class="filter" data-filter="expense">รายจ่าย</button></div>
+      <div id="historyList" class="transactionList"></div>
+    </section>
+
+    <section id="reports" class="page">
+      <div class="pageIntro"><div><small>ภาพรวมการเงิน</small><h2>รายงาน</h2></div><button id="reportBackup" class="iconBtn">⇩</button></div>
+      <div class="reportCard"><div class="reportTabs"><button class="active" data-report="month">เดือนนี้</button><button data-report="all">ทั้งหมด</button></div><div class="reportNumbers"><div><span>รายรับ</span><b id="reportIncome">฿0</b></div><div><span>รายจ่าย</span><b id="reportExpense">฿0</b></div><div><span>สุทธิ</span><b id="reportNet">฿0</b></div></div><div class="barChart" id="barChart"></div></div>
+      <div class="categoryCard"><div class="cardTitle"><b>สรุปตามหมวด</b></div><div id="reportCategories" class="reportCats"></div></div>
+    </section>
+
+    <section id="settings" class="page">
+      <div class="pageIntro"><div><small>ปรับแต่งแอป</small><h2>ตั้งค่า</h2></div><div class="settingsIcon">⚙</div></div>
+      <div class="settingsCard"><div class="settingIcon blue">👤</div><div><b>ข้อมูลส่วนตัว</b><span>ชื่อที่ใช้แสดงในหน้าแรก</span></div><input id="owner" placeholder="ชื่อของคุณ"></div>
+      <div class="settingsCard clickable" id="backupRow"><div class="settingIcon green">⇩</div><div><b>สำรองข้อมูล</b><span>บันทึกข้อมูลเป็นไฟล์ JSON</span></div><strong>›</strong></div>
+      <div class="settingsCard clickable" id="importRow"><div class="settingIcon purple">⇧</div><div><b>นำเข้าข้อมูล</b><span>กู้คืนข้อมูลจากไฟล์สำรอง</span></div><strong>›</strong><input id="importInput" type="file" accept="application/json" hidden></div>
+      <div class="settingsCard clickable" id="installRow"><div class="settingIcon orange">📱</div><div><b>ติดตั้งเป็นแอป</b><span>ติดตั้งบนมือถือหรือ PC</span></div><strong>›</strong></div>
+      <div class="settingsCard clickable" id="wipeRow"><div class="settingIcon red">⌫</div><div><b>ลบข้อมูลทั้งหมด</b><span>ควรสำรองข้อมูลก่อนลบ</span></div><strong>›</strong></div>
+    </section>
+  </main>
+</div>
+<nav class="bottomNav"><button class="active" data-page="home">⌂<span>หน้าหลัก</span></button><button data-page="add">＋<span>เพิ่ม</span></button><button data-page="history">☷<span>ประวัติ</span></button><button data-page="reports">▥<span>รายงาน</span></button><button data-page="settings">⚙<span>ตั้งค่า</span></button></nav>
+<div id="toast" class="toast"></div>
+<div id="scanModal" class="modal hidden"><div class="modalCard"><div class="spinner"></div><h3>กำลังอ่านสลิป...</h3><p id="modalText">กำลังเตรียมภาพ</p><div class="progress"><i id="progressBar"></i></div><small>อ่านเสร็จแล้วระบบจะบันทึกรายการให้อัตโนมัติ</small></div></div>
+<script src="app.js"></script>
+</body>
+</html>
